@@ -117,6 +117,40 @@ public:
 	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
+	//Supraincarcare operatori~~~~~~~~~~~~~~~~~~
+
+
+	Nava& operator&=(const Nava& nava)
+	{
+		if (this != &nava)
+		{
+			if(this->companie != NULL)
+			   delete[]this->companie;
+
+			this->nume = nava.nume;
+			if (nava.companie != NULL)
+			{
+				this->companie = new char[strlen(nava.companie) + 1];
+				strcpy_s(this->companie, strlen(nava.companie) + 1, nava.companie);
+			}
+			else
+			{
+				this->companie = nullptr;
+			}
+
+		}
+		return *this;
+	}
+
+	string operator()(string adaugare)
+	{
+		return nume + adaugare;
+	}
+
+
+
+
+	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	static int getLungimeNumeCompanie(char* companie) {
 	int lung = strlen(companie);
 		return lung;
@@ -127,8 +161,26 @@ public:
 		cout << "Nume vapor = " << this->nume << "\n Tonaj = " << this->tonaj << "\n An lansare = " << this->anLansare << "\n Companie:" << this->companie << endl;
 	}
 	
+	friend ostream& operator<<(ostream& afis, const Nava& nava)
+	{
+		afis << "Nume vapor = " << nava.nume << "\n Tonaj = " << nava.tonaj << "\n An lansare = " << nava.anLansare << "\n Companie:" << nava.companie << endl;
+
+		return afis;
+	}
+
+
 	friend void varstaNava(const Nava& nava);
+
+	friend bool operator!(Nava);
+
 };
+
+bool operator!(Nava nava)
+{
+	return nava.companie != "Costa";
+}
+
+
 
 int Nava::tonaj = 5000;
 
@@ -272,6 +324,66 @@ public:
 
 	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+	//Supraincarcare operatori~~~~~~~~~~~~~~~~~~
+
+
+	Motor& operator=(const Motor& motor)
+	{
+		if (this != &motor)
+		{
+			if (this->anRevizie != nullptr)
+			{
+				delete[]this->anRevizie;
+				this->anRevizie = nullptr;
+			}
+
+			this->producator = motor.producator;
+			
+			if (motor.anRevizie != nullptr && motor.nrRevizii > 0)
+			{
+				this->anRevizie = new int[motor.nrRevizii];
+				for (int i = 0; i < motor.nrRevizii; i++)
+				{
+					this->anRevizie[i] = motor.anRevizie[i];
+				}
+				this->nrRevizii = motor.nrRevizii;
+			}
+			else
+			{
+				this->anRevizie = nullptr;
+				this->nrRevizii = 0;
+			}
+
+
+		}
+		return *this;
+
+	}
+
+
+
+	int& operator[](int index)
+	{
+		if (index >= 0 && index < nrRevizii)
+		{
+			return anRevizie[index];
+		}
+	}
+
+
+	explicit operator int()
+	{
+		return nrRevizii;
+	}
+
+	friend int operator+(const Motor& motor1, const Motor& motor2);
+
+
+	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+
+
 	static int aniDeLaUltimaRevizie(int nrRev, int* anRev) 
 	{
 		int ani =2023 - anRev[nrRev - 1];
@@ -294,8 +406,17 @@ public:
 
 };
 
+int operator+(const Motor& motor1, const Motor& motor2)
+{
+	return motor1.nrRevizii + motor2.nrRevizii;
+}
+
 
 string Motor::culoareMotor = "Gri";
+
+
+
+
 
 class Container {
 private:
@@ -454,6 +575,74 @@ public:
 
 	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+		//Supraincarcare operatori~~~~~~~~~~~~~~~~~~
+
+
+	Container& operator=(const Container& container)
+	{
+		if (this != &container)
+		{
+			if (this->produse != nullptr)
+			{
+				delete[]this->produse;
+				this->produse = nullptr;
+			}
+
+			this->companie = container.companie;
+
+			if (container.produse != nullptr && container.nrProduse > 0)
+			{
+				this->produse = new string[container.nrProduse];
+				for (int i = 0; i < container.nrProduse; i++)
+				{
+					this->produse[i] = container.produse[i];
+				}
+				this->nrProduse = container.nrProduse;
+			}
+			else
+			{
+				this->produse = nullptr;
+				this->nrProduse = 0;
+			}
+
+
+		}
+		return *this;
+
+	}
+
+	Container operator++(int)
+	{
+		this->companie += " Mai buna ";
+		Container copie = *this;
+		return copie;
+	}
+
+	float operator/(const Container& container)
+	{
+		return greutateCutii / nrProduse;
+	}
+
+
+	Container operator-(int ProdInMinus) {
+		if (ProdInMinus > 0 && ProdInMinus <= nrProduse) {
+			nrProduse -= ProdInMinus;
+			string* newProduse = new string[nrProduse];
+			for (int i = 0; i < nrProduse; i++) {
+				newProduse[i] = produse[i];
+			}
+			delete[] produse;
+			produse = newProduse;
+		}
+
+		return *this;
+	}
+
+
+	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+
 
 	static int getVolumContainer(int lung, int lat, int inalt)
 	{
@@ -513,11 +702,11 @@ void main()
 	
 
 	Motor motor3("Damen");
-	int* anRevi = motor3.getAnRevizie();
+	/*int* anRevi = motor3.getAnRevizie();
 	for (int i = 0; i < motor3.getNrRevizii(); i++)
 	{
 		cout << anRevi[i] << endl;
-	}
+	}*/
 	
 	//cout<<Motor::aniDeLaUltimaRevizie(motor3.nrRevizii, motor3.anRevizie)<<endl;
 	
@@ -535,18 +724,18 @@ void main()
 	
 	string* prod2 = new string[3]{"mere", "morcovi", "inghetata"};
 
-	container2.setProduse(3, prod2);
-	container2.afisare();
+	/*container2.setProduse(3, prod2);
+	container2.afisare();*/
 
 	Container container3("UPS");
 	
-	string* myProducts = container3.getProduse();
+	/*string* myProducts = container3.getProduse();
 	if (myProducts != nullptr) {
 		for (int i = 0; i < container3.getNrProduse(); i++) {
 			cout << myProducts[i] << endl;
 		}
 		delete[] myProducts;  
-	}
+	}*/
 	
 	//cout << Container::getVolumContainer(container3.lungime, container3.latime, container3.inaltime)<<endl;
 
@@ -564,13 +753,40 @@ void main()
 
 	//constructor de copiere in actiune
 	Nava nava4(nava3);
-	cout<<nava4.getCompanie()<<endl;
     //cout<<Nava::getLungimeNumeCompanie(nava3.companie);
 
+///~~~~~~~~~
+	cout <<endl<< "Chestii noi~~~~~~~~~~~"<<endl;
+
+	string numeNou = nava2("Albatros");
+	cout << numeNou << endl;
+
+	cout << nava1<<endl;
+
+	bool esteCosta = !nava1;
+	cout << esteCosta << endl;
+
+	int an = motor2[2];
+	cout << an << endl;
+
+	int TotalRevizii = motor1 + motor2;
+	cout << TotalRevizii << endl;
+
+	int rezCast = (int)motor2;
+	cout << rezCast << endl;
+
+	Container container4 = container2++;
+	container4.afisare();
+
+	float greutateMedie = container1 / container1;
+	cout << greutateMedie << endl;
 
 
-	calcGreutate(container2);
-	varstaNava(nava3);
+	Container container5;
+	container5.afisare();
 
+	container5 = container5 - 2;
+
+	container5.afisare();
 
 };
