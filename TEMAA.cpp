@@ -16,20 +16,22 @@ class Nava {
 private:
 	string nume;
 	static int tonaj;
-	const int anLansare;
+	int anLansare;
 	char* companie;
 public:
 
-	Nava() : anLansare(1962)
+	Nava()
 	{
 		this->nume = "Speranta";
+		this->anLansare = 1990;
 		this->companie = new char[strlen("Costa") + 1];
 		strcpy_s(this->companie, strlen("Costa") + 1, "Costa");
 	}
 
-	Nava(string nume, const int anLansare, const char* companie) : anLansare(anLansare)
+	Nava(string nume, int anLansare, const char* companie)
 	{
 		this->nume = nume;
+		this->anLansare = anLansare;
 		this->companie = new char[strlen(companie) + 1];
 			strcpy_s(this->companie, strlen(companie) + 1, companie);
 	}
@@ -98,9 +100,10 @@ public:
 
 	//copiere si destructor~~~~~~~~~~~~~~~~~~
 
-	Nava(const Nava& nava) :anLansare(nava.anLansare) 
+	Nava(const Nava& nava)// :anLansare(nava.anLansare) 
 	{
 		this->nume = nava.nume;
+		this->anLansare = nava.anLansare;
 		this->companie = new char[strlen(nava.companie) + 1];
 		strcpy_s(this->companie, strlen(nava.companie) + 1, nava.companie);
 
@@ -128,6 +131,7 @@ public:
 			   delete[]this->companie;
 
 			this->nume = nava.nume;
+			this->anLansare = nava.anLansare;
 			if (nava.companie != NULL)
 			{
 				this->companie = new char[strlen(nava.companie) + 1];
@@ -168,6 +172,25 @@ public:
 		return afis;
 	}
 
+	friend istream& operator>>(istream& in, Nava& nava) {
+		cout << "Nume vapor = ";
+		in >> nava.nume;
+		cout << "\n An lansare = ";
+		in >> nava.anLansare;
+		char* companie = new char[100];
+		cout << "\n Companie:";
+		in >> companie;
+		cout<< endl;
+		
+		if (nava.companie) {
+			delete[]nava.companie;
+		}
+		nava.companie = new char[strlen(companie) + 1];
+		strcpy_s(nava.companie, strlen(companie) + 1, companie);
+		delete[]companie;
+		return in;
+	}
+
 
 	friend void varstaNava(const Nava& nava);
 
@@ -187,16 +210,17 @@ int Nava::tonaj = 5000;
 class Motor {
 private:
 	string producator;
-	const string motorizare ;
+	string motorizare ;
 	static string culoareMotor;
 	int nrRevizii;
 	int* anRevizie;
 
 public:
 
-	Motor() :motorizare("Diesel") {
+	Motor() {
 		this->producator = "MAN";
 		this->nrRevizii = 3;
+		this->motorizare = "Diesel";
 		this->anRevizie = new int[this->nrRevizii];
 		for (int i = 0;i < this->nrRevizii;i++) {
 			this->anRevizie[i] = 2000 + i * 4;
@@ -209,9 +233,10 @@ public:
 	
 
 
-	Motor(string producator,const string motor, int nrRevizii, int* anRevizie) :motorizare(motor) {
+	Motor(string producator,string motor, int nrRevizii, int* anRevizie) {
 		this->producator = producator;
 		this->nrRevizii = nrRevizii;
+		this->motorizare = motor;
 		this->anRevizie = new int[nrRevizii];
 		for (int i = 0;i < nrRevizii; i++) {
 			this->anRevizie[i] = anRevizie[i];
@@ -302,10 +327,11 @@ public:
 
 	//copiere si destructor~~~~~~~~~~~~~~~~~~
 
-	Motor(const Motor& motor) :motorizare(motor.motorizare)
+	Motor(const Motor& motor)
 	{
 		this->producator = motor.producator;
 		this->nrRevizii = motor.nrRevizii;
+		this->motorizare = motor.motorizare;
 		this->anRevizie = new int[motor.nrRevizii];
 		for (int i = 0; i < motor.nrRevizii; i++)
 		{
@@ -379,6 +405,38 @@ public:
 	friend int operator+(const Motor& motor1, const Motor& motor2);
 
 
+	friend ostream& operator<<(ostream& afis, const Motor& motor)
+	{
+		afis << "Producator = " << motor.producator<< "\n Motorizare =  " << motor.motorizare << "\n Culoare motor " << motor.culoareMotor << "\n Numar de revizii =" << motor.nrRevizii << endl;
+		for (int i = 0;i < motor.nrRevizii;i++)
+		{
+			afis << "Anul reviziei nr " << i << ": " << motor.anRevizie[i] << endl;
+		}
+		return afis;
+	}
+
+
+	friend istream& operator>>(istream& in, Motor& motor) {
+		cout << "Producator = ";
+		in >> motor.producator;
+		cout << "\n Motorizare = ";
+		in >> motor.motorizare;
+		cout << "\n Numar de revizii =";
+		in >> motor.nrRevizii;
+	
+		if (motor.anRevizie) {
+			delete[]motor.anRevizie;
+		}
+		motor.anRevizie = new int[motor.nrRevizii];
+		for (int i = 0;i < motor.nrRevizii;i++)
+		{   
+			cout << "Anul Reviziei nr " << i<<": ";
+			in >> motor.anRevizie[i];
+		}
+		return in;
+	}
+
+
 	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
@@ -421,7 +479,7 @@ string Motor::culoareMotor = "Gri";
 class Container {
 private:
 	string companie;
-	const float greutateCutii;
+	float greutateCutii;
 	static int lungime;
 	static int latime;
 	static int inaltime;
@@ -430,9 +488,10 @@ private:
 public:
 
 
-	Container() :greutateCutii(1500)
+	Container()
 	{
 		this->companie = "Fedex";
+		this->greutateCutii = 4500, 20;
 		this->nrProduse = 3;
 		this->produse = new string[nrProduse];
 		for (int i = 0;i < nrProduse; i++) {
@@ -440,9 +499,10 @@ public:
 		}
 	}
 
-	Container(string companie, const float greutate, int nrProduse, string* produse) :greutateCutii(greutate)
+	Container(string companie, float greutate, int nrProduse, string* produse) 
 	{
 		this->companie = companie;
+		this->greutateCutii = greutate;
 		this->nrProduse = nrProduse;
 		this->produse = new string[nrProduse];
 		for (int i = 0;i < nrProduse; i++) {
@@ -552,9 +612,10 @@ public:
 
 	//copiere si destructor~~~~~~~~~~~~~~~~~~
 
-	Container(const Container& container) :greutateCutii(container.greutateCutii)
+	Container(const Container& container)
 	{
 		this->companie = container.companie;
+		this->greutateCutii = container.greutateCutii;
 		this->nrProduse = container.nrProduse;
 		this->produse = new string[container.nrProduse];
 		for (int i = 0; i < container.nrProduse; i++)
@@ -639,6 +700,39 @@ public:
 	}
 
 
+	friend ostream& operator<<(ostream& afis, const Container& container)
+	{
+		afis << "Companie = " << container.companie << "\n Greutate Cutii =  " << container.greutateCutii << "\n NumarProduse " << container.nrProduse << "\n Lungime =" << container.lungime << "\n Latime =" << container.latime << "\n Inaltime =" << container.inaltime << endl;
+		for (int i = 0;i < container.nrProduse;i++)
+		{
+			afis << "Produsul nr " << i << ": " << container.produse[i] << endl;
+		}
+		afis << endl;
+		return afis;
+	}
+
+
+	friend istream& operator>>(istream& in, Container& container) {
+		cout << "Companie = ";
+		in >> container.companie;
+		cout << "\n Greutate cutii = ";
+		in >> container.greutateCutii;
+		cout << "\n Numar de produse =";
+		in >> container.nrProduse;
+
+		if (container.produse) {
+			delete[]container.produse;
+		}
+		container.produse = new string[container.nrProduse];
+		for (int i = 0;i < container.nrProduse;i++)
+		{
+			cout << "Produsul nr " << i << ": ";
+			in >> container.produse[i];
+		}
+		return in;
+	}
+
+
 	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
@@ -685,7 +779,7 @@ void main()
 {
 	
 	Motor motor1;
-	motor1.afisare();
+	//motor1.afisare();
 
 	int* anReviz = new int[3];
 	for (int i = 0;i < 3; i++) 
@@ -693,12 +787,12 @@ void main()
 	
 
 	Motor motor2("Ford", "electric", 3, anReviz);
-	motor2.afisare();
+	//motor2.afisare();
 
 	int* anRev = new int[3]{ 1990, 1994, 1998 };
 
 	motor2.setAnRevizie(3, anRev);
-	motor2.afisare();
+	//motor2.afisare();
 	
 
 	Motor motor3("Damen");
@@ -715,12 +809,12 @@ void main()
 
 	
 	Container container1;
-	container1.afisare();
+	//container1.afisare();
 
 	string prod[] = { "mere", "cartofi","unelte" };
 
 	Container container2("DHL", 200 , 3 , prod);
-	container2.afisare();
+	//container2.afisare();
 	
 	string* prod2 = new string[3]{"mere", "morcovi", "inghetata"};
 
@@ -740,23 +834,28 @@ void main()
 	//cout << Container::getVolumContainer(container3.lungime, container3.latime, container3.inaltime)<<endl;
 
 
-	Nava nava1;
-	nava1.afisare();
+	 Nava nava1;
+	 //cin >> nava1;
+	 //cout << nava1;
+	 //nava1.afisare();
 
 
 	Nava nava2("Titanic", 2000, "Odyssy");
-	nava2.afisare();
+	//nava2.afisare();
 
 
 	Nava nava3("Bombardierul Cruiser");
-	nava3.afisare();
+	//nava3.afisare();
 
 	//constructor de copiere in actiune
 	Nava nava4(nava3);
     //cout<<Nava::getLungimeNumeCompanie(nava3.companie);
 
-///~~~~~~~~~
-	cout <<endl<< "Chestii noi~~~~~~~~~~~"<<endl;
+///~~~~~~~~~FAZA 3
+
+
+
+	/*cout <<endl<< "Chestii noi~~~~~~~~~~~"<<endl;
 
 	string numeNou = nava2("Albatros");
 	cout << numeNou << endl;
@@ -787,6 +886,79 @@ void main()
 
 	container5 = container5 - 2;
 
-	container5.afisare();
+	container5.afisare();*/
+
+
+
+
+//////~~~~~~~FAZA 4~~~~
+
+
+
+	Nava nva[3];
+	for (int i = 0; i < 3;i++)
+	{
+		cout << "Introdu datele pentru nava " << i << " :";
+		cin >> nva[i];
+	};
+	for (int i = 0; i < 3;i++)
+	{
+		cout << nva[i];
+	}
+
+
+	Motor mtr[3];
+	for (int i = 0; i < 3;i++)
+	{
+		cout << "Introdu datele pentru motorul " << i << " : ";
+		cin >> mtr[i];
+	};
+	for (int i = 0; i < 3;i++)
+	{
+		cout << mtr[i];
+	}
+
+
+
+	Container ctr[2]; 
+
+
+	for (int i = 0; i < 2;i++)
+	{
+		cout << "Introdu datele pentru Containerul " << i << " : ";
+		cin >> ctr[i];
+	};
+	for (int i = 0; i < 3;i++)
+	{
+		cout << ctr[i];
+	}
+
+
+
+
+	Nava nva2[2][2];
+	for (int i = 0; i < 2;i++)
+		for (int j = 0; j < 2;j++)
+	      {
+		        cout << "Introdu datele pentru nava de pe randul " << i << " si coloana "<<j<<" : ";
+		        cin >> nva2[i][j];
+	     };
+	for (int i = 0; i < 2;i++)
+		for (int j = 0; j < 2;j++)
+		{
+			cout << nva2[i][j];
+		};
+
+
+
+
+
+
+
+
+
+
+
+
 
 };
