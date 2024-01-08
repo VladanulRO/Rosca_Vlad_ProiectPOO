@@ -330,8 +330,8 @@ public:
 	Motor(const Motor& motor)
 	{
 		this->producator = motor.producator;
-		this->nrRevizii = motor.nrRevizii;
 		this->motorizare = motor.motorizare;
+		this->nrRevizii = motor.nrRevizii;
 		this->anRevizie = new int[motor.nrRevizii];
 		for (int i = 0; i < motor.nrRevizii; i++)
 		{
@@ -364,6 +364,7 @@ public:
 			}
 
 			this->producator = motor.producator;
+			this->motorizare = motor.motorizare;
 			
 			if (motor.anRevizie != nullptr && motor.nrRevizii > 0)
 			{
@@ -650,6 +651,7 @@ public:
 			}
 
 			this->companie = container.companie;
+			this->greutateCutii = container.greutateCutii;
 
 			if (container.produse != nullptr && container.nrProduse > 0)
 			{
@@ -775,6 +777,163 @@ void varstaNava(const Nava& nava)
 
 
 
+
+
+
+class Avion {
+
+private:
+	string numeAvion;
+	int nrMotoare;
+	Motor* mtr;
+public:
+/////~~~~~~~~~Constructori~~~~~~~
+	Avion() {
+		this->numeAvion = "Boeing 737";
+		this->nrMotoare = 2;
+		this->mtr = new Motor[this->nrMotoare];
+	}
+
+	~Avion() {
+		delete[] mtr; 
+	}
+
+
+
+
+	/////~~~~~~~~~Getteri si Setteri~~~~~~~
+
+
+	string getNumeAvion()
+	{
+		return numeAvion;
+	}
+
+	int getNrMotoare()
+	{
+		return nrMotoare;
+	}
+
+	Motor* getMtr()
+	{
+		if (mtr != nullptr && nrMotoare > 0)
+		{
+			Motor* mtr = new Motor[nrMotoare];
+			for (int i = 0; i < nrMotoare; i++)
+			{
+				mtr[i] = mtr[i];
+			}
+			return mtr;
+		}
+		else
+		{
+			return nullptr;
+		}
+	}
+
+	void setNumeAvion(string numeAvion)
+	{
+		if (numeAvion.length() > 3)
+		{
+			this->numeAvion = numeAvion;
+		}
+	}
+
+	void setNrMotoare(int nrMotoare)
+	{
+		if (nrMotoare > 0)
+		{
+			this->nrMotoare = nrMotoare;
+		}
+	}
+
+
+	void setMtr(int  nrMotoare, Motor* mtr)
+	{
+		if (mtr != nullptr && nrMotoare > 0)
+		{
+			if (this->mtr != nullptr)
+			{
+				delete[]this->mtr;
+			}
+			this->mtr = new Motor[nrMotoare];
+			for (int i = 0; i < nrMotoare; i++)
+				this->mtr[i] = mtr[i];
+			this->nrMotoare = nrMotoare;
+		}
+	}
+///~~~~~~~~~~~~Operatori~~~~~
+
+	Avion& operator=(const Avion& avion)
+	{
+		if (this != &avion)
+		{
+			if (this->mtr != nullptr)
+			{
+				delete[]this->mtr;
+				this->mtr = nullptr;
+			}
+
+			this->numeAvion = avion.numeAvion;
+
+			if (avion.mtr != nullptr && avion.nrMotoare > 0)
+			{
+				this->mtr = new Motor[avion.nrMotoare];
+				for (int i = 0; i < avion.nrMotoare; i++)
+				{
+					this->mtr[i] = avion.mtr[i];
+				}
+				this->nrMotoare = avion.nrMotoare;
+			}
+			else
+			{
+				this->mtr = nullptr;
+				this->nrMotoare = 0;
+			}
+
+
+		}
+		return *this;
+
+	}
+
+
+
+	Motor& operator[](int index)
+	{
+		if (index >= 0 && index < nrMotoare)
+		{
+			return mtr[index];
+		}
+	}
+
+
+
+	friend ostream& operator<<(ostream& afis, const Avion& avion)
+	{
+		afis << "Nume avion = " << avion.numeAvion << "\n Numar motoare =  " << avion.nrMotoare <<endl;
+		for (int i = 0;i < avion.nrMotoare;i++)
+		{
+			afis << "Motorul cu numarul " << i << " este: " <<"\n" << avion.mtr[i] << endl;
+		}
+		return afis;
+	}
+
+
+
+};
+
+
+
+
+
+
+
+
+
+
+
+
 void main()
 {
 	
@@ -895,65 +1054,66 @@ void main()
 
 
 
-	Nava nva[3];
-	for (int i = 0; i < 3;i++)
-	{
-		cout << "Introdu datele pentru nava " << i << " :";
-		cin >> nva[i];
-	};
-	for (int i = 0; i < 3;i++)
-	{
-		cout << nva[i];
-	}
+	//Nava nva[3];
+	//for (int i = 0; i < 3;i++)
+	//{
+	//	cout << "Introdu datele pentru nava " << i << " :";
+	//	cin >> nva[i];
+	//};
+	//for (int i = 0; i < 3;i++)
+	//{
+	//	cout << nva[i];
+	//}
 
 
-	Motor mtr[3];
-	for (int i = 0; i < 3;i++)
-	{
-		cout << "Introdu datele pentru motorul " << i << " : ";
-		cin >> mtr[i];
-	};
-	for (int i = 0; i < 3;i++)
-	{
-		cout << mtr[i];
-	}
-
-
-
-	Container ctr[2]; 
-
-
-	for (int i = 0; i < 2;i++)
-	{
-		cout << "Introdu datele pentru Containerul " << i << " : ";
-		cin >> ctr[i];
-	};
-	for (int i = 0; i < 3;i++)
-	{
-		cout << ctr[i];
-	}
+	//Motor mtr[3];
+	//for (int i = 0; i < 3;i++)
+	//{
+	//	cout << "Introdu datele pentru motorul " << i << " : ";
+	//	cin >> mtr[i];
+	//};
+	//for (int i = 0; i < 3;i++)
+	//{
+	//	cout << mtr[i];
+	//}
 
 
 
+	//Container ctr[2]; 
 
-	Nava nva2[2][2];
-	for (int i = 0; i < 2;i++)
-		for (int j = 0; j < 2;j++)
-	      {
-		        cout << "Introdu datele pentru nava de pe randul " << i << " si coloana "<<j<<" : ";
-		        cin >> nva2[i][j];
-	     };
-	for (int i = 0; i < 2;i++)
-		for (int j = 0; j < 2;j++)
-		{
-			cout << nva2[i][j];
-		};
+
+	//for (int i = 0; i < 2;i++)
+	//{
+	//	cout << "Introdu datele pentru Containerul " << i << " : ";
+	//	cin >> ctr[i];
+	//};
+	//for (int i = 0; i < 3;i++)
+	//{
+	//	cout << ctr[i];
+	//}
 
 
 
 
+	//Nava nva2[2][2];
+	//for (int i = 0; i < 2;i++)
+	//	for (int j = 0; j < 2;j++)
+	//      {
+	//	        cout << "Introdu datele pentru nava de pe randul " << i << " si coloana "<<j<<" : ";
+	//	        cin >> nva2[i][j];
+	//     };
+	//for (int i = 0; i < 2;i++)
+	//	for (int j = 0; j < 2;j++)
+	//	{
+	//		cout << nva2[i][j];
+	//	};
 
 
+
+///~~~~~~~~~~~~~  FAZA 5  ~~~~~~~
+
+Avion avion1;
+cout << avion1;
 
 
 
