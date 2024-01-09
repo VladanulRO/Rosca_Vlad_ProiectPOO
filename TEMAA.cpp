@@ -8,6 +8,7 @@
 
 #include <iostream>
 #include <string>
+#include <fstream>
 using namespace std;
 
 
@@ -189,6 +190,39 @@ public:
 		strcpy_s(nava.companie, strlen(companie) + 1, companie);
 		delete[]companie;
 		return in;
+	}
+
+////~~~~~~~~~~~~Fisiere pt nava (binare)~~~~~~~~~~~~~~
+	
+	friend ofstream& operator<<(ofstream& out, Nava& nava) {
+		int size = nava.nume.size();
+		out.write((char*)&size, sizeof(int));
+		out.write(nava.nume.c_str(), size);
+		out.write((char*)&nava.tonaj, sizeof(int));
+		out.write((char*)&nava.anLansare, sizeof(int));
+
+		size = strlen(nava.companie) + 1;
+		out.write((char*)&size, sizeof(int));
+		out.write(nava.companie, size);
+
+		return out;
+	}
+
+
+	friend ifstream& operator>>(ifstream& input, Nava& nava) {
+		int size;
+		input.read((char*)&size, sizeof(int));
+		nava.nume.resize(size + 1);
+		input.read((char*)&nava.nume[0], size);
+		input.read((char*)&nava.tonaj, sizeof(int));
+		input.read((char*)&nava.anLansare, sizeof(int));
+
+		input.read((char*)&size, sizeof(int));
+		delete[] nava.companie;
+		nava.companie = new char[size];
+		input.read(nava.companie, size);
+
+		return input;
 	}
 
 
@@ -462,6 +496,79 @@ public:
 		return strlen(companie);
 	}
 	*/
+
+/////~~~~~~~~~~~~~~~Lucru fisiere~~~~~~~~~~
+
+	friend ofstream& operator<<(ofstream& out, Motor& motor)
+	{
+		out << motor.producator << endl;
+		out << motor.motorizare << endl;
+		out << motor.culoareMotor << endl;
+		out << motor.nrRevizii << endl;
+		for (int i = 0;i < motor.nrRevizii;i++)
+		{
+			out<< motor.anRevizie[i] << endl;
+		}
+		out << endl;
+		return out;
+	}
+
+	friend ifstream& operator>>(ifstream& ist, Motor& m) {
+		ist >> m.producator;
+		ist >> m.motorizare;
+		ist >> m.culoareMotor;
+		ist >> m.nrRevizii;
+		delete[] m.anRevizie;
+		m.anRevizie = new int[m.nrRevizii];
+		for (int i = 0; i < m.nrRevizii; i++) {
+			ist >> m.anRevizie[i];
+		}
+		return ist;
+	}
+
+
+	// Friend function for reading from a binary file
+
+
+
+	/*ofstream afisareFisText(const string& numeFisier)
+		if (afisareFisText.is_open())
+		{
+			afisareFisText <<
+		}
+		else
+		{
+			cout << endl << "Eroare, fisierul nu a fost creat";
+		}*/
+
+
+
+
+
+
+	/*void scrieInFisierText(const string& numeFisier) 
+		const {
+		ofstream fout(numeFisier);
+		if (fout.is_open()) {
+			fout << producator << "\n";
+			fout << motorizare << "\n";
+			fout << nrRevizii << "\n";
+			for (int i = 0; i < nrRevizii; i++) {
+				fout << anRevizie[i] << " ";
+			}
+			fout << "\n";
+			fout.close();
+			cout << "Citire in: " << numeFisier << endl;
+		}
+		else {
+			cerr << "Nu s-a putut deschide fisierul: " << numeFisier << endl;
+		}
+	}*/
+
+
+
+
+
 
 };
 
@@ -737,7 +844,38 @@ public:
 
 	//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+	////~~~~~~~~~~~~Fisiere pt Container (binare)~~~~~~~~~~~~~~
 
+	friend ofstream& operator<<(ofstream& out, Container& container) {
+		int size = container.companie.size();
+		out.write((char*)&size, sizeof(int));
+		out.write(container.companie.c_str(), size);
+		out.write((char*)&container.greutateCutii, sizeof(float));
+		out.write((char*)&container.nrProduse, sizeof(int));
+		for (int i = 0; i < container.nrProduse; i++) {
+			size = container.produse[i].size();
+			out.write((char*)&size, sizeof(int));
+			out.write(container.produse[i].c_str(), size);
+		}
+		return out;
+	}
+
+	friend ifstream& operator>>(ifstream& input, Container& container) {
+		int size;
+		input.read((char*)&size, sizeof(int));
+		container.companie.resize(size + 1);
+		input.read((char*)&container.companie[0], size);
+		input.read((char*)&container.greutateCutii, sizeof(float));
+		input.read((char*)&container.nrProduse, sizeof(int));
+		delete[] container.produse;
+		container.produse = new string[container.nrProduse];
+		for (int i = 0; i < container.nrProduse; i++) {
+			input.read((char*)&size, sizeof(int));
+			container.produse[i].resize(size + 1);
+			input.read((char*)&container.produse[i][0], size);
+		}
+		return input;
+	}
 
 
 	static int getVolumContainer(int lung, int lat, int inalt)
@@ -799,7 +937,17 @@ public:
 	}
 
 
+	Avion(const Avion& avion) {
+		this->numeAvion = avion.numeAvion;
+		this->nrMotoare = avion.nrMotoare;
 
+		this->mtr = new Motor[this->nrMotoare];
+
+		
+		for (int i = 0; i < this->nrMotoare; i++) {
+			this->mtr[i] = avion.mtr[i];
+		}
+	}
 
 	/////~~~~~~~~~Getteri si Setteri~~~~~~~
 
@@ -920,6 +1068,47 @@ public:
 	}
 
 
+	friend istream& operator>>(istream& in, Avion& avion) {
+		cout << "Nume Avion: ";
+		in >> avion.numeAvion;
+		cout << "\n Nr Motoare: ";
+		in >> avion.nrMotoare;
+
+		if (avion.mtr) {
+			delete[] avion.mtr;
+		}
+		avion.mtr = new Motor[avion.nrMotoare];
+
+		cout << "\n Motoare: ";
+		for (int i = 0; i < avion.nrMotoare; i++) {
+			in >> avion.mtr[i];
+		}
+
+		return in;
+	}
+
+///Lucrul cu fisiere text~~~~~~~~~~~~~
+
+	friend ofstream& operator<<(ofstream& out, Avion& avion) {
+		out << avion.numeAvion << endl;
+		out << avion.nrMotoare << endl;
+		for (int i = 0; i < avion.nrMotoare; i++) {
+			out << avion.mtr[i];
+		}
+		out << endl;
+		return out;
+	}
+
+	friend ifstream& operator>>(ifstream& input, Avion& avion) {
+		input >> avion.numeAvion;
+		input >> avion.nrMotoare;
+		delete[] avion.mtr;
+		avion.mtr = new Motor[avion.nrMotoare];
+		for (int i = 0; i < avion.nrMotoare; i++) {
+			input >> avion.mtr[i];
+		}
+		return input;
+	}
 
 };
 
@@ -1112,10 +1301,137 @@ void main()
 
 ///~~~~~~~~~~~~~  FAZA 5  ~~~~~~~
 
-Avion avion1;
-cout << avion1;
+//Avion avion1;
+//cout << avion1;
+
+//pt Clasa motor:
 
 
+
+
+
+//Motor m1, m2, m3, m4;
+//cout << m1;
+//cin >> m2;
+//cout << "\nCitit: " << m2;
+//
+//ofstream fisOut("motor.txt");
+//
+//if (!fisOut) {
+//	           cerr << "\nFisier nealocat"; 
+//             }
+//else {
+//	fisOut << m1; fisOut << m2;
+//     }
+//fisOut.close();
+//
+//ifstream fisIn("motor.txt");
+//
+//if (!fisIn) {
+//	         cerr << "\nFisier negasit"; 
+//             }
+//        else{
+//	              fisIn >> m3; fisIn >> m4;
+//            }
+//           fisIn.close();
+//
+//cout << "\nRezultatul citirii " << m4 <<endl << m3<< endl;
+
+
+
+
+//fisiere pt clasa  Nava~~~~~~~~
+
+
+
+//Nava n1, n2, n3, n4;
+//cout << n1;
+//cin >> n2;
+//cout << "\nCitit: " << n2;
+//
+//ofstream fisOut("nava.dat", ios::binary);
+//if (!fisOut) {
+//	cerr << "\nFisier nealocat"; 
+//}
+//else {
+//	fisOut << n1; fisOut << n2;
+//}
+//fisOut.close();
+//
+//ifstream fisIn("nava.dat", ios::binary);
+//if (!fisIn) {
+//	cerr << "\nFisier negasit"; 
+//}
+//else {
+//	fisIn >> n3; fisIn >> n4;
+//}
+//fisIn.close();
+//
+//cout << "\nRezultat: " << n4 << endl << n3<<endl;
+
+
+
+
+
+//fisiere pt clasa  Container~~~~~~~~
+
+
+
+
+//Container c1, c2, c3, c4;
+//cout << c1;
+//cin >> c2;
+//cout << "\nCitit: " << c2;
+//
+//ofstream fisOut("container.dat", ios::binary);
+//if (!fisOut) {
+//	cerr << "\nFisier nealocat"; 
+//}
+//else {
+//	fisOut << c1; fisOut << c2;
+//}
+//fisOut.close();
+//
+//ifstream fisIn("container.dat", ios::binary);
+//if (!fisIn) {
+//	cerr << "\nFisier negasit"; 
+//}
+//else {
+//	fisIn >> c3; fisIn >> c4;
+//}
+//fisIn.close();
+//
+//cout << "\nRezultat: " << c4<<endl<<c3<<endl;
+
+
+
+//fisiere pt clasa  Avion~~~~~~~~
+
+
+//Avion a1, a2, a3, a4;
+//cout << a1;
+//cin >> a2;
+//cout << "\nCitit: " << a2;
+//
+//ofstream fisOut("avion.txt");
+//if (!fisOut) {
+//	cerr << "\nFisier nealocat"; 
+//}
+//else {
+//	fisOut << a1; fisOut << a2;
+//}
+//fisOut.close();
+//
+//ifstream fisIn("avion.txt");
+//if (!fisIn) {
+//	cerr << "\nFisier negasit"; 
+//}
+//else {
+//	fisIn >> a3; fisIn >> a4;
+//}
+//fisIn.close();
+//
+//cout << "\n Rezolvare: " << a4;
 
 
 
