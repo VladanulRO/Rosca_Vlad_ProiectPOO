@@ -966,12 +966,12 @@ public:
 	{
 		if (mtr != nullptr && nrMotoare > 0)
 		{
-			Motor* mtr = new Motor[nrMotoare];
+			Motor* mtre = new Motor[nrMotoare];
 			for (int i = 0; i < nrMotoare; i++)
 			{
-				mtr[i] = mtr[i];
+				mtre[i] = mtr[i];
 			}
-			return mtr;
+			return mtre;
 		}
 		else
 		{
@@ -1110,6 +1110,227 @@ public:
 		return input;
 	}
 
+};
+
+///~~~~Faza 7~~~~~~
+
+
+
+class MotorCamion : public Motor{
+private:
+	float consum;
+	int nrCalatorii;
+	int* emisiiCalatorie;
+
+public: 
+
+	MotorCamion()
+	{
+		consum = 10;
+		nrCalatorii = 0;
+		emisiiCalatorie= nullptr;
+	}
+
+	MotorCamion(float consum, int nrCalatorii, int* emisiiCalatorie, string producator, string motorizare) :Motor(producator, motorizare, 0, nullptr)
+	{
+		this->consum = consum;
+		this->nrCalatorii = nrCalatorii;
+		this->emisiiCalatorie = new int[this->nrCalatorii];
+		for (int i = 0;i < this->nrCalatorii; i++) {
+			this->emisiiCalatorie[i] = 3 + i;
+		}
+	}
+
+//~~~Getteri si Setteri~~~~
+
+	float getConsum(){
+		return consum;
+	}
+
+	void setConsum(float consum) {
+		this->consum = consum;
+	}
+
+	int getNrCalatorii(){
+		return nrCalatorii;
+	}
+
+	void setNrCalatorii(int nrCalatorii) {
+		this->nrCalatorii = nrCalatorii;
+	}
+
+
+	int* getEmisiiCalatorie()
+	{
+		if (emisiiCalatorie != nullptr && nrCalatorii > 0)
+		{
+			int* emis = new int[nrCalatorii];
+			for (int i = 0; i < nrCalatorii; i++)
+			{
+				emis[i] = emisiiCalatorie[i];
+			}
+			return emis;
+		}
+		else
+		{
+			return nullptr;
+		}
+	}
+
+	void setEmisiiCalatorie(int nrCalatorii, int* emisiiCalatorie)
+	{
+		if (nrCalatorii > 0 && emisiiCalatorie != nullptr)
+		{
+			if (this->emisiiCalatorie != nullptr)
+			{
+				delete[]this->emisiiCalatorie;
+			}
+			this->emisiiCalatorie = new int[nrCalatorii];
+			for (int i = 0; i < nrCalatorii; i++)
+			{
+				this->emisiiCalatorie[i] = emisiiCalatorie[i];
+			}
+			this->nrCalatorii = nrCalatorii;
+		}
+	}
+
+	~MotorCamion() {
+		if (this->emisiiCalatorie != NULL)
+		{
+			delete[]this->emisiiCalatorie;
+			this->emisiiCalatorie = NULL;
+		}
+	}
+
+	MotorCamion& operator=(const MotorCamion& mtrCam)
+	{
+		if (this != &mtrCam)
+		{
+
+			Motor::operator=(mtrCam);
+			if (this->emisiiCalatorie != nullptr)
+			{
+				delete[]this->emisiiCalatorie;
+				this->emisiiCalatorie = nullptr;
+			}
+
+			this->consum = mtrCam.consum;
+
+			if (mtrCam.emisiiCalatorie != nullptr && mtrCam.nrCalatorii > 0)
+			{
+				this->emisiiCalatorie = new int[mtrCam.nrCalatorii];
+				for (int i = 0; i < mtrCam.nrCalatorii; i++)
+				{
+					this->emisiiCalatorie[i] = mtrCam.emisiiCalatorie[i];
+				}
+				this->nrCalatorii = mtrCam.nrCalatorii;
+			}
+			else
+			{
+				this->emisiiCalatorie = nullptr;
+				this->nrCalatorii = 0;
+			}
+
+
+		}
+		return *this;
+
+	}
+
+
+	MotorCamion(const MotorCamion& mtrCam):Motor(mtrCam)
+	{
+		this->consum = mtrCam.consum;
+		this->nrCalatorii = mtrCam.nrCalatorii;
+		this->emisiiCalatorie = new int[mtrCam.nrCalatorii];
+		for (int i = 0; i <mtrCam.nrCalatorii; i++)
+		{
+			this->emisiiCalatorie[i] = mtrCam.emisiiCalatorie[i];
+		}
+	}
+
+	friend ostream& operator<<(ostream& out, const  MotorCamion& mtrCam)
+	{
+		out << (Motor)mtrCam;
+		out << " Consumul motorului/100 km este : " << mtrCam.consum;
+		out << "\n Numarul de calatorii facute este:" << mtrCam.nrCalatorii<<endl;
+		for (int i = 0; i < mtrCam.nrCalatorii; i++) {
+			out << "Emisiile totale in calatoria " << i << " este : " << mtrCam.emisiiCalatorie[i];
+			out << endl;
+		}
+		return out;
+	}
+
+};
+
+
+class Cargobot : public Nava, public Container {
+private:
+	float cantitateBalast;
+	string taraProvenienta;
+public:
+
+	Cargobot()
+	{
+		cantitateBalast = 3000.56;
+		taraProvenienta = "Franta";
+	}
+
+	Cargobot(float cantitateBalast, string taraProvenienta, string companie, float greutateCutii, int nrProduse, string* produse, string nume, int anLansare) :Container(companie, greutateCutii, nrProduse, produse),Nava(nume, anLansare, nullptr)
+	{
+		this->cantitateBalast = cantitateBalast;
+		this->taraProvenienta = taraProvenienta;
+	}
+
+///~~~~Getteri si Setteri~~~~~~
+
+	float getCantitateBalast(){
+		return cantitateBalast;
+	}
+
+	void setCantitateBalast(float cantitateBalast) {
+		this->cantitateBalast = cantitateBalast;
+	}
+
+	string getTaraProvenienta(){
+		return taraProvenienta;
+	}
+
+	void setTaraProvenienta(const string& taraProvenienta) {
+		this->taraProvenienta = taraProvenienta;
+	}
+
+	Cargobot(const Cargobot& carg) :Nava(carg), Container(carg)
+	{
+		this->cantitateBalast= carg.cantitateBalast;
+		this->taraProvenienta = carg.taraProvenienta;
+	}
+
+	Cargobot& operator=(const Cargobot& carg)
+	{
+		if (this != &carg)
+		{
+
+			Nava::operator=(carg);
+			Container::operator=(carg);
+
+			this->cantitateBalast = carg.cantitateBalast;
+			this->taraProvenienta = carg.taraProvenienta;
+
+
+		}
+		return *this;
+
+	}
+
+	friend ostream& operator<<(ostream& out, const  Cargobot& carg)
+	{
+		out << (Nava)carg<<endl;
+		out << (Container)carg<<endl;
+		out << " Cantitate de balast din cargobot este de  : " << carg.cantitateBalast;
+		out << "\n Tara de provenienta a cargobotului este :" << carg.taraProvenienta<<endl;
+		return out;
+	}
 };
 
 
@@ -1434,6 +1655,32 @@ void main()
 //cout << "\n Rezolvare: " << a4;
 
 
+
+///~~~~~FAZA 7~~~~~~~~~
+
+
+MotorCamion motCam1;
+
+int* emCal = new int[2];
+for (int i = 0;i < 2; i++)
+	emCal[i] = 3 + i * 2;
+
+MotorCamion motCam2(10, 2, emCal, "BMW", "Diesel");
+
+MotorCamion motCam3(10, 2, emCal, "Scania", "Diesel");
+cout << motCam3;
+Motor  motor9;
+
+motor9 = motCam3;
+
+cout << motor9;
+Cargobot cargob1;
+cout << cargob1;
+
+string prod3[] = { "capsuni", "gutui","medicamente" };
+
+Cargobot cargob2(3000.5, "Croatia", "Costa", 2000.35, 3, prod3 , "S.S.Nova", 1990);
+cout << cargob2;
 
 
 
