@@ -13,13 +13,56 @@ using namespace std;
 
 
 
-class Nava {
+
+class Vehicul {
+private:
+	string mediuVehicul;
+public:
+	virtual void metodaPura() const = 0;
+	virtual int tonajulFara10Tone() = 0;
+
+
+	virtual ~Vehicul(){
+
+	}
+
+	Vehicul() {
+		this->mediuVehicul = "acvatic";
+	}
+};
+
+
+class MijlocDePropulsie {
+public:
+	virtual void metodaPura() = 0;
+	virtual int material() = 0;
+
+
+	virtual ~MijlocDePropulsie() {
+
+	}
+
+};
+
+
+class Nava: virtual public Vehicul {
 private:
 	string nume;
 	static int tonaj;
 	int anLansare;
 	char* companie;
 public:
+
+	virtual void metodaPura() const override{
+		cout << this->nume << " a fost lansat/a in anul " << this->anLansare<<endl;
+	}
+
+	virtual int tonajulFara10Tone()
+	{
+		int tonaj = this->tonaj - 10;
+		return tonaj;
+	}
+
 
 	Nava()
 	{
@@ -228,14 +271,7 @@ public:
 
 	friend void varstaNava(const Nava& nava);
 
-	friend bool operator!(Nava);
-
 };
-
-bool operator!(Nava nava)
-{
-	return nava.companie != "Costa";
-}
 
 
 
@@ -1264,7 +1300,7 @@ public:
 };
 
 
-class Cargobot : public Nava, public Container {
+class Cargobot : virtual public Nava, public Container {
 private:
 	float cantitateBalast;
 	string taraProvenienta;
@@ -1330,7 +1366,14 @@ public:
 		out << " Cantitate de balast din cargobot este de  : " << carg.cantitateBalast;
 		out << "\n Tara de provenienta a cargobotului este :" << carg.taraProvenienta<<endl;
 		return out;
+
+
 	}
+
+	virtual void metodaPura() const override {
+		cout <<" Acesta e  un cargobot " << endl;
+	}
+
 };
 
 
@@ -1403,21 +1446,21 @@ void main()
 	//cout << Container::getVolumContainer(container3.lungime, container3.latime, container3.inaltime)<<endl;
 
 
-	 Nava nava1;
+	 /*Nava nava1;*/
 	 //cin >> nava1;
 	 //cout << nava1;
 	 //nava1.afisare();
 
 
-	Nava nava2("Titanic", 2000, "Odyssy");
+	/*Nava nava2("Titanic", 2000, "Odyssy");*/
 	//nava2.afisare();
 
 
-	Nava nava3("Bombardierul Cruiser");
+	/*Nava nava3("Bombardierul Cruiser");*/
 	//nava3.afisare();
 
 	//constructor de copiere in actiune
-	Nava nava4(nava3);
+	/*Nava nava4(nava3);*/
     //cout<<Nava::getLungimeNumeCompanie(nava3.companie);
 
 ///~~~~~~~~~FAZA 3
@@ -1659,29 +1702,41 @@ void main()
 ///~~~~~FAZA 7~~~~~~~~~
 
 
-MotorCamion motCam1;
+//MotorCamion motCam1;
+//
+//int* emCal = new int[2];
+//for (int i = 0;i < 2; i++)
+//	emCal[i] = 3 + i * 2;
+//
+//MotorCamion motCam2(10, 2, emCal, "BMW", "Diesel");
+//
+//MotorCamion motCam3(10, 2, emCal, "Scania", "Diesel");
+//cout << motCam3;
+//Motor  motor9;
+//
+//motor9 = motCam3;
+//
+//cout << motor9;
 
-int* emCal = new int[2];
-for (int i = 0;i < 2; i++)
-	emCal[i] = 3 + i * 2;
-
-MotorCamion motCam2(10, 2, emCal, "BMW", "Diesel");
-
-MotorCamion motCam3(10, 2, emCal, "Scania", "Diesel");
-cout << motCam3;
-Motor  motor9;
-
-motor9 = motCam3;
-
-cout << motor9;
 Cargobot cargob1;
-cout << cargob1;
+//cout << cargob1;
+//
+//string prod3[] = { "capsuni", "gutui","medicamente" };
+//
+//Cargobot cargob2(3000.5, "Croatia", "Costa", 2000.35, 3, prod3 , "S.S.Nova", 1990);
+//cout << cargob2;
 
-string prod3[] = { "capsuni", "gutui","medicamente" };
 
-Cargobot cargob2(3000.5, "Croatia", "Costa", 2000.35, 3, prod3 , "S.S.Nova", 1990);
-cout << cargob2;
+Nava nava1;
+Nava nava2;
 
+Nava nava3("Titanic", 2000, "Odyssy");
 
+Nava nava4("Boromeo", 2000, "Nostra");
+
+Vehicul* veh[] = { &nava1, &cargob1, &nava2, &nava3, &nava4, &cargob1, &nava1, &cargob1, &nava2, &nava3 };
+
+for (int i = 0; i < 6; i++)
+	veh[i]->metodaPura();
 
 };
