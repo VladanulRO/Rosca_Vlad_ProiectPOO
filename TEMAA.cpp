@@ -34,8 +34,8 @@ public:
 
 class MijlocDePropulsie {
 public:
-	virtual void metodaPura() = 0;
-	virtual int material() = 0;
+	virtual void metodaPura1()const = 0;
+
 
 
 	virtual ~MijlocDePropulsie() {
@@ -87,7 +87,7 @@ public:
 
 	//Getteri ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-	string getNume()
+	virtual string getNume()const
 	{
 		return nume;
 	}
@@ -277,7 +277,7 @@ public:
 
 int Nava::tonaj = 5000;
 
-class Motor {
+class Motor: virtual public MijlocDePropulsie {
 private:
 	string producator;
 	string motorizare ;
@@ -286,6 +286,11 @@ private:
 	int* anRevizie;
 
 public:
+
+	virtual void metodaPura1()const override {
+		cout << this->producator << endl;
+	};
+
 
 	Motor() {
 		this->producator = "MAN";
@@ -962,6 +967,7 @@ private:
 	Motor* mtr;
 public:
 /////~~~~~~~~~Constructori~~~~~~~
+	
 	Avion() {
 		this->numeAvion = "Boeing 737";
 		this->nrMotoare = 2;
@@ -1160,6 +1166,10 @@ private:
 
 public: 
 
+	virtual void metodaPura1() const override {
+		cout <<this->consum << endl;
+	}
+
 	MotorCamion()
 	{
 		consum = 10;
@@ -1312,7 +1322,7 @@ public:
 		taraProvenienta = "Franta";
 	}
 
-	Cargobot(float cantitateBalast, string taraProvenienta, string companie, float greutateCutii, int nrProduse, string* produse, string nume, int anLansare) :Container(companie, greutateCutii, nrProduse, produse),Nava(nume, anLansare, nullptr)
+	Cargobot(float cantitateBalast, string taraProvenienta, string companie, float greutateCutii, int nrProduse, string* produse, string nume, int anLansare, const char* compan_nume) :Container(companie, greutateCutii, nrProduse, produse),Nava(nume, anLansare, compan_nume)
 	{
 		this->cantitateBalast = cantitateBalast;
 		this->taraProvenienta = taraProvenienta;
@@ -1371,7 +1381,7 @@ public:
 	}
 
 	virtual void metodaPura() const override {
-		cout <<" Acesta e  un cargobot " << endl;
+		cout <<"Cargobotul "<<Nava::getNume()<<" vine din "<<this->taraProvenienta<< endl;
 	}
 
 };
@@ -1721,22 +1731,25 @@ void main()
 Cargobot cargob1;
 //cout << cargob1;
 //
-//string prod3[] = { "capsuni", "gutui","medicamente" };
+string prod3[] = { "capsuni", "gutui","medicamente" };
 //
-//Cargobot cargob2(3000.5, "Croatia", "Costa", 2000.35, 3, prod3 , "S.S.Nova", 1990);
+Cargobot cargob2(3000.5, "Croatia", "Costa", 2000.35, 3, prod3 , "S.S.Nova", 1990, "Petros");
+Cargobot cargob3(3000.5, "Canada", "Costa", 2000.35, 3, prod3, "Acadia", 1990, "Petros");
+Cargobot cargob4(3000.5, "Italia", "Costa", 2000.35, 3, prod3, "Alpino", 1990, "Petros");
+
 //cout << cargob2;
 
 
 Nava nava1;
-Nava nava2;
+Nava nava2("Venetia", 2005, "Hamburg");
 
-Nava nava3("Titanic", 2000, "Odyssy");
+Nava nava3("Titanic", 1996, "Odyssy");
 
-Nava nava4("Boromeo", 2000, "Nostra");
+Nava nava4("Boromeo", 2010, "Nostra");
 
-Vehicul* veh[] = { &nava1, &cargob1, &nava2, &nava3, &nava4, &cargob1, &nava1, &cargob1, &nava2, &nava3 };
+Vehicul* veh[] = { &nava1, &cargob1, &nava2, &nava3, &nava4, &cargob4, &cargob1, &nava2, &cargob2, &cargob3 };
 
-for (int i = 0; i < 6; i++)
+for (int i = 0; i < 10; i++)
 	veh[i]->metodaPura();
 
 };
